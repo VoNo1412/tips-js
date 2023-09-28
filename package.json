@@ -1,0 +1,31 @@
+{
+  "name": "tips",
+  "version": "1.0.0",
+  "description": "Introduce",
+  "main": "server.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VoNo1412/tips-js.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VoNo1412/tips-js/issues"
+  },
+  "homepage": "https://github.com/VoNo1412/tips-js#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "compression": "^1.7.4",
+    "morgan": "^1.10.0"
+  }
+}
