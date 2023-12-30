@@ -1,6 +1,7 @@
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const userService = require("../service/user.service");
+const authHelper = require("../helper/auth.helper");
+const { ACCESS_TOKEN, REFRESH_TOKEN } = require('../configs/constants');
 
 const signup = async (req, res) => {
     try {
@@ -15,16 +16,7 @@ const signup = async (req, res) => {
         const newUser = await userService.createUser(username, hashedPassword, role, permission);
         if (newUser.status === 200) {
             // Generate JWT token
-            const token = jwt.sign(
-                {
-                    userId: newUser.id,
-                    username: newUser.username,
-                    role: newUser.role,
-                    permissions: newUser.permissions
-                },
-                process.env.SECRET,
-                { expiresIn: process.env.EXPIRES }
-            );
+            const token = await authHelper.generateAccessToken(newUser);
 
             res.status(201).json({ status: 'OK', message: 'success', data: { user: newUser, token } });
         }
@@ -35,7 +27,7 @@ const signup = async (req, res) => {
 };
 
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
     try {
         const { username, password } = req.body;
 
@@ -44,16 +36,25 @@ const login = async (req, res) => {
         if (!user || !isCheckPassword) {
             return res.status(401).json({ message: 'Invalid credentials.' });
         }
-
+        // console.log('user: ', user.dataValues.username)
+        const userValue = {
+            id: user.dataValues.id,
+            username: user.dataValues.username,
+            password: user.dataValues.password,
+            role: user.dataValues.role,
+            permission: user.dataValues.permission,
+        }
         // Generate JWT token
-        const token = jwt.sign(
-            { userId: user.id, username: user.username, role: user.role, permissions: user.permissions },
-            process.env.SECRET,
-            { expiresIn: process.env.EXPIRES }
-        );
+        const accessToken = await authHelper.generateAccessToken(userValue);
+        const refreshToken = await authHelper.generateRefreshToken(userValue)
+        // Clear existing cookies
+        authHelper.clearAllCookies(req, res, next);
 
-        res.cookie('token', token, { httpOnly: true, maxAge: 3600000 });
-        res.json({ message: 'Login successful.', data: { user, token } });
+        // Set cookies for both access and refresh tokens
+        res.cookie(ACCESS_TOKEN, accessToken, { httpOnly: true, maxAge: process.env.ACCESS_EXPIRES }); // Access token expires in 1 hour
+        res.cookie(REFRESH_TOKEN, refreshToken, { httpOnly: true, maxAge: process.env.REFRESH_EXPIRES }); // Refresh token expires in 30 days
+
+        res.json({ message: 'Login successful.', data: { accessToken, refreshToken } });
     } catch (error) {
         console.error('Error in login:', error);
         res.status(500).json({ message: 'Internal Server Error' });

@@ -2,12 +2,12 @@ const jwt = require('jsonwebtoken');
 
 const authenticateToken = (req, res, next) => {
     try {
-        const token = req.header('Authorization')?.split(" ")[1] || req.cookies.token;
+        const token = req.header('Authorization')?.split(" ")[1] || req.cookies.ACCESS_TOKEN;
         if (!token) {
             return res.status(401).json({ message: 'Access denied. Token missing.' });
         }
 
-        const decoded = jwt.verify(token, process.env.SECRET);
+        const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
         req.user = decoded;
         next();
     } catch (error) {
