@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const authenticateToken = (req, res, next) => {
     try {
         const token = req.header('Authorization')?.split(" ")[1] || req.cookies.ACCESS_TOKEN;
+        console.log("This is token: ", token);
         if (!token) {
             return res.status(401).json({ message: 'Access denied. Token missing.' });
         }
@@ -19,7 +20,7 @@ const authenticateToken = (req, res, next) => {
 const authorizeRole = (requiredRole) => (req, res, next) => {
     try {
         if (!req.user || req.user.role !== requiredRole) {
-            return res.status(403).json({ message: 'Access denied. Insufficient permissions.' });
+            return res.status(403).json({ message: 'Permissions denied.' });
         }
         next();
     } catch (error) {

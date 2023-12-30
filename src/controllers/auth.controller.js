@@ -30,13 +30,13 @@ const signup = async (req, res) => {
 const login = async (req, res, next) => {
     try {
         const { username, password } = req.body;
-
+        console.log({ username, password })
         const user = await userService.getUserByUsername(username);
         const isCheckPassword = await bcrypt.compare(password, user.password);
         if (!user || !isCheckPassword) {
             return res.status(401).json({ message: 'Invalid credentials.' });
         }
-        // console.log('user: ', user.dataValues.username)
+
         const userValue = {
             id: user.dataValues.id,
             username: user.dataValues.username,
@@ -47,8 +47,6 @@ const login = async (req, res, next) => {
         // Generate JWT token
         const accessToken = await authHelper.generateAccessToken(userValue);
         const refreshToken = await authHelper.generateRefreshToken(userValue)
-        // Clear existing cookies
-        authHelper.clearAllCookies(req, res, next);
 
         // Set cookies for both access and refresh tokens
         res.cookie(ACCESS_TOKEN, accessToken, { httpOnly: true, maxAge: process.env.ACCESS_EXPIRES }); // Access token expires in 1 hour

@@ -9,17 +9,19 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const authRoutes = require("./routes/auth.routes")
 const cookieParser = require('cookie-parser');
+const session = require('express-session'); // Add this line
+const passport = require('passport');
+const passportConfig = require("./configs/passport.config");
 
-
-// init middleware
-app.use(morgan("dev"));
-app.use(helmet());
-app.use(compression());
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(session({ secret: process.env.SECRET, resave: true, saveUninitialized: true }));
 app.use(cookieParser());
 app.use(express.static('public'));
+app.use(passport.initialize());
+app.use(passport.session());
+passportConfig(passport);
 
 // Setting the view engine to use handlebars
 app.engine('.hbs', exphbs.engine({ extname: '.hbs' }));

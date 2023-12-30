@@ -16,19 +16,7 @@ const generateRefreshToken = (user) => {
     );
 };
 
-const clearAllCookies = (req, res, next) => {
-    const cookies = req.cookies;
-
-    // Iterate over each cookie and clear it
-    for (const cookieName in cookies) {
-        res.clearCookie(cookieName);
-    }
-
-    next();
-};
-
 module.exports = {
     generateAccessToken,
     generateRefreshToken,
-    clearAllCookies
 }
