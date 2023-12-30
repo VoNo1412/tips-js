@@ -22,15 +22,10 @@ async function getUserByUsername(username) {
     });
 }
 
-async function updateUser(userId, newData) {
-    const { username, password, role, permission } = newData;
-    const [updatedRowCount, updatedUsers] = await User.update(
-        { username, password, role, permission },
-        { returning: true, where: { id: userId } }
-    );
-
-    return updatedRowCount > 0 ? updatedUsers[0].toJSON() : null;
-}
+async function updateUser(userId) {
+    return await User.update({ isActive: false },
+        { where: { id: userId } }
+    );}
 
 async function deleteUser(userId) {
     const deletedUser = await User.findByPk(userId);

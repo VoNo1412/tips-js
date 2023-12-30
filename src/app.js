@@ -28,15 +28,15 @@ app.engine('.hbs', exphbs.engine({ extname: '.hbs' }));
 app.set('view engine', '.hbs');
 app.set('views', path.join(__dirname, 'views'));
 // init router
-app.get('/', (req, res) => {
-    try {
-        console.log('Rendering main template...');
-        res.render('layouts/main', { books });
-    } catch (err) {
-        console.error('Error rendering template:', err);
-        res.status(500).send('Internal Server Error');
-    }
-});
+// app.get('/', (req, res) => {
+//     try {
+//         console.log('Rendering main template...');
+//         res.render('layouts/main', { books });
+//     } catch (err) {
+//         console.error('Error rendering template:', err);
+//         res.status(500).send('Internal Server Error');
+//     }
+// });
 
 // Routes
 app.use('/auth', authRoutes);

@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const userService = require("../service/user.service")
 
 const authenticateToken = (req, res, next) => {
     try {
@@ -15,6 +16,7 @@ const authenticateToken = (req, res, next) => {
         console.error('Error in authenticateToken:', error);
         return res.status(403).json({ message: 'Access denied. Invalid token.' });
     }
+
 };
 
 const authorizeRole = (requiredRole) => (req, res, next) => {
@@ -28,6 +30,8 @@ const authorizeRole = (requiredRole) => (req, res, next) => {
         return res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
+
 
 module.exports = {
     authenticateToken,

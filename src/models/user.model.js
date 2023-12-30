@@ -24,6 +24,10 @@ const User = sequelize.define('User', {
     type: DataTypes.ARRAY(DataTypes.TEXT),
     allowNull: false,
   },
+  isActive: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
   created_at: {
     type: DataTypes.DATE,
     allowNull: false,

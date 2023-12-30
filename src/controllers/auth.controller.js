@@ -44,6 +44,8 @@ const login = async (req, res, next) => {
             role: user.dataValues.role,
             permission: user.dataValues.permission,
         }
+        await userService.updateUser(userValue.id, { isActive: true });
+
         // Generate JWT token
         const accessToken = await authHelper.generateAccessToken(userValue);
         const refreshToken = await authHelper.generateRefreshToken(userValue)
