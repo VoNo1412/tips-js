@@ -8,6 +8,8 @@ const dotenv = require('dotenv').config();
 const path = require('path');
 const bodyParser = require('body-parser');
 const authRoutes = require("./routes/auth.routes")
+const cookieParser = require('cookie-parser');
+
 
 // init middleware
 app.use(morgan("dev"));
@@ -16,7 +18,7 @@ app.use(compression());
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
-
+app.use(cookieParser());
 app.use(express.static('public'));
 
 // Setting the view engine to use handlebars

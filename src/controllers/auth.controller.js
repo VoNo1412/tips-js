@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const userService = require("../service/user.service");
 
-
 const signup = async (req, res) => {
     try {
         const { username, password, role, permission } = req.body;
@@ -53,7 +52,8 @@ const login = async (req, res) => {
             { expiresIn: process.env.EXPIRES }
         );
 
-        res.json({ message: 'Login successful.', data: { user, token: 'Bearer ' + token } });
+        res.cookie('token', token, { httpOnly: true, maxAge: 3600000 });
+        res.json({ message: 'Login successful.', data: { user, token } });
     } catch (error) {
         console.error('Error in login:', error);
         res.status(500).json({ message: 'Internal Server Error' });
