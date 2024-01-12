@@ -7,11 +7,12 @@ const compression = require('compression');
 const dotenv = require('dotenv').config();
 const path = require('path');
 const bodyParser = require('body-parser');
-const authRoutes = require("./routes/auth.routes")
+const authRoutes = require("./routes/access/auth.routes")
 const cookieParser = require('cookie-parser');
 const session = require('express-session'); // Add this line
 const passport = require('passport');
 const passportConfig = require("./configs/passport.config");
+const router = require('./routes/index');
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -38,7 +39,8 @@ app.set('views', path.join(__dirname, 'views'));
 //     }
 // });
 
+
 // Routes
-app.use('/auth', authRoutes);
+app.use('/', router)
 
 module.exports = app;

@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const userService = require("../service/user.service")
 
 const authenticateToken = (req, res, next) => {
     try {

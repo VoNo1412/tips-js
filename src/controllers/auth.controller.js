@@ -2,66 +2,59 @@ const bcrypt = require('bcrypt');
 const userService = require("../service/user.service");
 const authHelper = require("../helper/auth.helper");
 const { ACCESS_TOKEN, REFRESH_TOKEN } = require('../configs/constants');
+const authService = require('../service/auth.service');
 
-const signup = async (req, res) => {
-    try {
-        const { username, password, role, permission } = req.body;
-
-        if (!username || !password || !role) {
-            return res.status(400).json({ message: 'Username, password, and role are required.' });
+class AuthController {
+    signUp = (req, res, next) => {
+        try {
+            console.log('::signUp: ', req.body);
+            const data = authService.signup(req, res, next);
+            console.log('::data: ', data);
+            return res.status(201).json({
+                code: "20001",
+                data
+            })
+        } catch (error) {
+            throw error;
         }
-        // Hash and salt the password before saving to the database
-        const hashedPassword = await bcrypt.hash(password, 10);
-        // Call the userService function to create a new user
-        const newUser = await userService.createUser(username, hashedPassword, role, permission);
-        if (newUser.status === 200) {
-            // Generate JWT token
-            const token = await authHelper.generateAccessToken(newUser);
-
-            res.status(201).json({ status: 'OK', message: 'success', data: { user: newUser, token } });
-        }
-    } catch (error) {
-        console.error('Error in signup:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
     }
-};
+}
 
 
-const login = async (req, res, next) => {
-    try {
-        const { username, password } = req.body;
-        console.log({ username, password })
-        const user = await userService.getUserByUsername(username);
-        const isCheckPassword = await bcrypt.compare(password, user.password);
-        if (!user || !isCheckPassword) {
-            return res.status(401).json({ message: 'Invalid credentials.' });
-        }
 
-        const userValue = {
-            id: user.dataValues.id,
-            username: user.dataValues.username,
-            password: user.dataValues.password,
-            role: user.dataValues.role,
-            permission: user.dataValues.permission,
-        }
-        await userService.updateUser(userValue.id, { isActive: true });
 
-        // Generate JWT token
-        const accessToken = await authHelper.generateAccessToken(userValue);
-        const refreshToken = await authHelper.generateRefreshToken(userValue)
+// const login = async (req, res, next) => {
+//     try {
+//         const { username, password } = req.body;
+//         console.log({ username, password })
+//         const user = await userService.getUserByUsername(username);
+//         const isCheckPassword = await bcrypt.compare(password, user.password);
+//         if (!user || !isCheckPassword) {
+//             return res.status(401).json({ message: 'Invalid credentials.' });
+//         }
 
-        // Set cookies for both access and refresh tokens
-        res.cookie(ACCESS_TOKEN, accessToken, { httpOnly: true, maxAge: process.env.ACCESS_EXPIRES }); // Access token expires in 1 hour
-        res.cookie(REFRESH_TOKEN, refreshToken, { httpOnly: true, maxAge: process.env.REFRESH_EXPIRES }); // Refresh token expires in 30 days
+//         const userValue = {
+//             id: user.dataValues.id,
+//             username: user.dataValues.username,
+//             password: user.dataValues.password,
+//             role: user.dataValues.role,
+//             permission: user.dataValues.permission,
+//         }
+//         await userService.updateUser(userValue.id, { isActive: true });
 
-        res.json({ message: 'Login successful.', data: { accessToken, refreshToken } });
-    } catch (error) {
-        console.error('Error in login:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
-    }
-};
+//         // Generate JWT token
+//         const accessToken = await authHelper.generateAccessToken(userValue);
+//         const refreshToken = await authHelper.generateRefreshToken(userValue)
 
-module.exports = {
-    signup,
-    login,
-};
+//         // Set cookies for both access and refresh tokens
+//         res.cookie(ACCESS_TOKEN, accessToken, { httpOnly: true, maxAge: process.env.ACCESS_EXPIRES }); // Access token expires in 1 hour
+//         res.cookie(REFRESH_TOKEN, refreshToken, { httpOnly: true, maxAge: process.env.REFRESH_EXPIRES }); // Refresh token expires in 30 days
+
+//         res.json({ message: 'Login successful.', data: { accessToken, refreshToken } });
+//     } catch (error) {
+//         console.error('Error in login:', error);
+//         res.status(500).json({ message: 'Internal Server Error' });
+//     }
+// };
+
+module.exports = new AuthController();

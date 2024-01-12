@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../configs/db.config'); // Adjust the path based on your project structure
+const { ROLES } = require('../configs/constants');
 
 const User = sequelize.define('User', {
   id: {
@@ -7,34 +8,39 @@ const User = sequelize.define('User', {
     primaryKey: true,
     autoIncrement: true,
   },
-  username: {
+  name: {
     type: DataTypes.STRING(255),
     allowNull: false,
-    unique: false,
+  },
+  email: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+    unique: true,
+  },
+  status: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
   },
   password: {
     type: DataTypes.STRING(255),
     allowNull: false,
   },
   role: {
-    type: DataTypes.ENUM('admin', 'user', 'guest'), // Add your role values
+    type: DataTypes.ARRAY(DataTypes.ENUM(ROLES.ADMIN, ROLES.USER, ROLES.GUEST)),
     allowNull: false,
+    defaultValue: []
   },
-  permission: {
-    type: DataTypes.ARRAY(DataTypes.TEXT),
-    allowNull: false,
-  },
-  isActive: {
+  verify: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
-  created_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-  },
+  // created_at: {
+  //   type: DataTypes.DATE,
+  //   allowNull: false,
+  // },
 }, {
   tableName: 'users',
-  timestamps: false, // Disable Sequelize's default timestamp columns
+  timestamps: true, // Disable Sequelize's default timestamp columns
 });
 
 // Synchronize the model with the database to create the table
